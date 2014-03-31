@@ -1,0 +1,17 @@
+[core]
+	precomposeunicode = true
+	excludesfile = /Users/dostermeier/.gitignore_global
+[user]
+	email = daniel.ostermeier@booking.com
+	name = Daniel Ostermeier
+[push]
+	default = simple
+[color]
+	ui = auto
+[branch]
+        autosetuprebase = always
+[alias]
+        last = log -p -1 HEAD
+        unstage = reset HEAD --
+        lp = log --format=\"%h - %an, %ar : %s\"
+        hist = log --graph --color=always --pretty='[%C(cyan)%h%Creset]%C(bold cyan)%d%Creset %s' --all
