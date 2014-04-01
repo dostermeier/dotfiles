@@ -1,0 +1,32 @@
+[user]
+    name = Daniel Ostermeier
+    email = daniel.ostermeier@gmail.com
+
+[color]
+    ui = auto
+    diff = auto
+    status = auto
+    branch = auto
+
+[diff]
+    tool = vimdiff
+
+[alias]
+    ci = commit
+    cp = commit -p
+    st = status -s
+    br = branch
+    co = checkout
+    last = log -p -1 HEAD
+    unstage = reset HEAD --
+    lp = log --format=\"%h - %an, %ar : %s\"
+    hist = log --graph --color=always --pretty='[%C(cyan)%h%Creset]%C(bold cyan)%d%Creset %s' --all
+
+[branch]
+    autosetuprebase = always
+
+[push]
+    default = upstream
+
+[pull]
+    rebase = true
