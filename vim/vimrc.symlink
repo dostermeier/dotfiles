@@ -33,4 +33,6 @@ Bundle 'leshill/vim-json'
 
 filetype plugin indent on  " Required
 
+syntax on
+set background=dark
 colorscheme solarized
