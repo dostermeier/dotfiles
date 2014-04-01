@@ -16,6 +16,8 @@ let g:solarized_termtrans = 1
 let g:solarized_termcolors = 256
 let g:solarized_visibility = "high"
 
+Bundle 'tomasr/molokai'
+
 " Filetype Syntax Highlighting
 Bundle 'c9s/perlomni.vim'
 Bundle 'vim-perl/vim-perl'
@@ -33,6 +35,6 @@ Bundle 'leshill/vim-json'
 
 filetype plugin indent on  " Required
 
-syntax on
-set background=dark
-colorscheme solarized
+"syntax on
+"set background=dark
+"colorscheme solarized
