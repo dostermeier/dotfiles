@@ -5,12 +5,22 @@
 	email = daniel.ostermeier@booking.com
 	name = Daniel Ostermeier
 [push]
-	default = simple
+	default = upstream
+[pull]
+        rebase = true
 [color]
 	ui = auto
+        diff = auto
+        status = auto
+        branch = auto
+[diff]
+        tool = vimdiff
 [branch]
         autosetuprebase = always
 [alias]
+        co = checkout
+        br = branch
+        st = status -s
         last = log -p -1 HEAD
         unstage = reset HEAD --
         lp = log --format=\"%h - %an, %ar : %s\"
