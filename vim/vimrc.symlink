@@ -8,6 +8,7 @@ set encoding=utf-8
 set vb t_vb=                                    " Ignore Bells
 
 " UI Tweaks
+" -----------------------------
 set bg=dark
 set number
 set showmode
@@ -15,12 +16,18 @@ set nohlsearch
 set laststatus=2
 
 " Tab handling
+" ----------------------------
 set autoindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set shiftround
 set smarttab
+
+" Maps and Functions
+" -----------------------------
+map <f2> :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " Vundle Plugin Configurations
 " -----------------------------
@@ -51,6 +58,10 @@ Bundle 'vim-scripts/Vim-R-plugin'
 Bundle 'Rykka/riv.vim'
 Bundle 'tpope/vim-markdown'
 Bundle 'leshill/vim-json'
+
+" Layout
+" -----------------------------
+Bundle 'scrooloose/nerdtree'
 
 filetype plugin indent on                       " Required
 

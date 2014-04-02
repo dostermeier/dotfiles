@@ -4,13 +4,6 @@ export ZSH=$HOME/.dotfiles
 # your project folder that we can `c [tab]` to
 export PROJECTS=~/Code
 
-# use .zshrc.local for SUPER SECRET CRAP that you don't
-# want in your public, versioned repo.
-if [[ -a ~/.zshrc.local ]]
-then
-  source ~/.zshrc.local
-fi
-
 # all of our zsh files
 typeset -U config_files
 config_files=($ZSH/**/*.zsh)
@@ -36,5 +29,12 @@ for file in ${(M)config_files:#*/completion.zsh}
 do
   source $file
 done
+
+# use .zshrc.local for SUPER SECRET CRAP that you don't
+# want in your public, versioned repo.
+if [[ -a ~/.zshrc.local ]]
+then
+  source ~/.zshrc.local
+fi
 
 unset config_files
