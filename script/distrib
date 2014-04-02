@@ -1,0 +1,23 @@
+#!/bin/bash
+
+DISTRIBUTE="$ZSH/script/distribute-to"
+
+# Check for distrib hosts
+if [ ! -f ~/.distrib_hosts ]; then
+    echo "!! no ~/.distrib_hosts found !!";
+    exit 1;
+fi;
+
+## Setups
+if [ ! -x "$DISTRIBUTE" ]; then
+    echo "!! Could not execute $DISTRIBUTE !!"
+    exit 1;
+fi;
+
+for host in `cat ~/.distrib_hosts`; do
+    echo "=> distribute to $host";
+    $DISTRIBUTE $host
+done;
+
+echo "DONE.";
+exit 0;

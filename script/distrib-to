@@ -25,18 +25,19 @@ if [ -z $NO_DNS_CHECK ] && [ "$rc" -ne "0" ]; then
 fi;
 
 # Add to distribution
-if [ -f ~/.distrib_hosts ]; then
-    grep "^$HOST$" ~/.distrib_hosts
-    rc=$?;
+if [ ! -f ~/.distrib_hosts ]; then
+    touch ~/.distrib_hosts
+fi;
+grep "^$HOST$" ~/.distrib_hosts
+rc=$?;
 
-    if [ "$rc" -ne "0" ]; then
-        cp ~/.distrib_hosts /tmp/distrib_hosts.$$
-        echo $HOST >> /tmp/distrib_hosts.$$
-        sort -u /tmp/distrib_hosts.$$ > ~/.distrib_hosts
-        rm /tmp/distrib_hosts.$$
-        hosts=`wc -l ~/.distrib_hosts`;
-        echo " => Added to ~/.distrib_hosts (now $hosts hosts)"
-    fi;
+if [ "$rc" -ne "0" ]; then
+    cp ~/.distrib_hosts /tmp/distrib_hosts.$$
+    echo $HOST >> /tmp/distrib_hosts.$$
+    sort -u /tmp/distrib_hosts.$$ > ~/.distrib_hosts
+    rm /tmp/distrib_hosts.$$
+    hosts=`wc -l ~/.distrib_hosts`;
+    echo " => Added to ~/.distrib_hosts (now $hosts hosts)"
 fi;
 
 ## Rsync for dotfiles
