@@ -1,0 +1,58 @@
+#!/bin/sh
+
+LOCAL_OVERWRITE=1;
+LOCAL_OVERWRITE=0;
+NO_DNS_CHECK=1;
+
+HOST=$1
+
+SSH="/usr/bin/ssh -x"
+SCP="/usr/bin/scp"
+RSYNC="/usr/bin/rsync"
+
+if [ ${DEBUG:-0} -gt 0 ]; then
+    RSYNC_OPTS='-v'
+else
+    SCP_OPTS='-q'
+fi
+
+# Check the Host
+host $HOST &> /dev/null
+rc=$?
+if [ -z $NO_DNS_CHECK ] && [ "$rc" -ne "0" ]; then
+    echo "Invalid host: $HOST";
+    exit 1;
+fi;
+
+# Add to distribution
+if [ -f ~/.distrib_hosts ]; then
+    grep "^$HOST$" ~/.distrib_hosts
+    rc=$?;
+
+    if [ "$rc" -ne "0" ]; then
+        cp ~/.distrib_hosts /tmp/distrib_hosts.$$
+        echo $HOST >> /tmp/distrib_hosts.$$
+        sort -u /tmp/distrib_hosts.$$ > ~/.distrib_hosts
+        rm /tmp/distrib_hosts.$$
+        hosts=`wc -l ~/.distrib_hosts`;
+        echo " => Added to ~/.distrib_hosts (now $hosts hosts)"
+    fi;
+fi;
+
+## Rsync for dotfiles
+$RSYNC $RSYNC_OPTS -a --delete --exclude=.git --exclude=.gitignore ~/.dotfiles -e ssh $HOST:~
+echo " => Sync of dotfiles complete, running install";
+$SSH $HOST "cd ~/.dotfiles; script/bootstrap -O";
+rc=$?;
+if [ "$rc" -ne "0" ]; then
+    echo " => dotfile bootstrap failed.";
+else
+    echo " => dotfiles installed.";
+fi
+
+## Vim Configs
+$RSYNC $RSYNC_OPTS -a --exclude=.git --exclude=.gitignore --delete -e ssh ~/.vim $HOST:~
+echo " => Sync of vim setup complete"
+
+echo "DONE.";
+true;
