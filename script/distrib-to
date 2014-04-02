@@ -1,59 +1,99 @@
 #!/bin/sh
 
-LOCAL_OVERWRITE=1;
-LOCAL_OVERWRITE=0;
-NO_DNS_CHECK=1;
+# 
+#
+#
+
+# TODO: support long options....
+
+usage()
+{
+    cat << EOF
+    usage: $0 options <host>
+
+    This script distributes ~/.dotfiles to a specified host before
+    triggering a bootstrap.
+
+    OPTIONS:
+       -h      Show this message
+       -d      Execute a DNS check of the host.
+EOF
+}
+
+while getopts “hd” OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         d)
+             DNS_CHECK=1; 
+             ;;
+         *)
+            usage
+            exit
+            ;;
+     esac
+     shift;
+done
 
 HOST=$1
 
+if [ -z $HOST ]; then
+    echo "No host specified.";
+    usage
+    exit
+fi
+
 SSH="/usr/bin/ssh -x"
-SCP="/usr/bin/scp"
 RSYNC="/usr/bin/rsync"
 
 if [ ${DEBUG:-0} -gt 0 ]; then
     RSYNC_OPTS='-v'
-else
-    SCP_OPTS='-q'
 fi
 
-# Check the Host
-host $HOST &> /dev/null
-rc=$?
-if [ -z $NO_DNS_CHECK ] && [ "$rc" -ne "0" ]; then
-    echo "Invalid host: $HOST";
-    exit 1;
-fi;
+# If Host DNS check is requested 
+if [ ! -z $DNS_CHECK ]; then
+    host "$HOST" &> /dev/null 
+    rc=$?;
+    if [ "$rc" -ne "0" ]; then
+        echo "Invalid host: $HOST";
+        exit 1;
+    fi
+fi
 
-# Add to distribution
+# If the host is not already in the ~/.distrib_hosts file, add it.
+# TODO: make this optional.
 if [ ! -f ~/.distrib_hosts ]; then
     touch ~/.distrib_hosts
 fi;
-grep "^$HOST$" ~/.distrib_hosts
-rc=$?;
 
+grep "^$HOST$" ~/.distrib_hosts &> /dev/null
+rc=$?;
 if [ "$rc" -ne "0" ]; then
     cp ~/.distrib_hosts /tmp/distrib_hosts.$$
     echo $HOST >> /tmp/distrib_hosts.$$
     sort -u /tmp/distrib_hosts.$$ > ~/.distrib_hosts
     rm /tmp/distrib_hosts.$$
-    hosts=`wc -l ~/.distrib_hosts`;
-    echo " => Added to ~/.distrib_hosts (now $hosts hosts)"
+    host_count=`cat ~/.distrib_hosts | wc -l | tr -d ' '`;
+    echo " => Added to ~/.distrib_hosts (now $host_count hosts)"
 fi;
 
 ## Rsync for dotfiles
 $RSYNC $RSYNC_OPTS -a --delete --exclude=.git --exclude=.gitignore ~/.dotfiles -e ssh $HOST:~
-echo " => Sync of dotfiles complete, running install";
+echo " => Sync of dotfiles complete, running bootstrap.";
 $SSH $HOST "cd ~/.dotfiles; script/bootstrap -O";
 rc=$?;
 if [ "$rc" -ne "0" ]; then
     echo " => dotfile bootstrap failed.";
 else
-    echo " => dotfiles installed.";
+    echo " => dotfiles bootstrapped.";
 fi
 
 ## Vim Configs
+echo " => Sync vim setup."
 $RSYNC $RSYNC_OPTS -a --exclude=.git --exclude=.gitignore --delete -e ssh ~/.vim $HOST:~
-echo " => Sync of vim setup complete"
-
+echo " => Vim setup completed."
 echo "DONE.";
 true;
