@@ -13,6 +13,6 @@ then
 fi
 
 # Install homebrew packages
-brew install coreutils tree
+brew install coreutils tree git
 
 exit 0
