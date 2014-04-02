@@ -1,10 +1,8 @@
 #!/bin/sh
 
-# 
-#
-#
-
-# TODO: support long options....
+REGISTER_HOST=false;
+DISTRIB_HOSTS="$HOME/.distrib_hosts";
+ACTION_CHECK_DNS=false;
 
 usage()
 {
@@ -15,33 +13,41 @@ usage()
     triggering a bootstrap.
 
     OPTIONS:
-       -h      Show this message
-       -d      Execute a DNS check of the host.
+       -h | --help      Show this message
+       --check-dns      Execute a DNS check of the host.
+       -r | --register  Register the host in the .distrib_hosts file.
 EOF
 }
 
-while getopts “hd” OPTION
-do
-     case $OPTION in
-         h)
-             usage
-             exit 1
-             ;;
-         d)
-             DNS_CHECK=1; 
-             ;;
-         *)
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | awk -F= '{print $2}'`
+    case $PARAM in
+        -h | --help)
             usage
             exit
             ;;
-     esac
-     shift;
-done
+        --check-dns)
+            ACTION_CHECK_DNS=true;
+            ;;
+        -r | --register)
+            REGISTER_HOST=true;
+            ;;
+        -* | --*)
+            echo "ERROR: unknown parameter \"$PARAM\""
+            usage
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac;
+    shift;
+done;
 
 HOST=$1
-
 if [ -z $HOST ]; then
-    echo "No host specified.";
+    echo "Required argument <host> was not specified.";
     usage
     exit
 fi
@@ -54,7 +60,7 @@ if [ ${DEBUG:-0} -gt 0 ]; then
 fi
 
 # If Host DNS check is requested 
-if [ ! -z $DNS_CHECK ]; then
+if [ "$ACTION_CHECK_DNS" == "true" ]; then
     host "$HOST" &> /dev/null 
     rc=$?;
     if [ "$rc" -ne "0" ]; then
@@ -63,21 +69,22 @@ if [ ! -z $DNS_CHECK ]; then
     fi
 fi
 
-# If the host is not already in the ~/.distrib_hosts file, add it.
-# TODO: make this optional.
-if [ ! -f ~/.distrib_hosts ]; then
-    touch ~/.distrib_hosts
-fi;
+if [ "$REGISTER_HOST" == "true" ]; then
+    # If the host is not already in the ~/.distrib_hosts file, add it.
+    if [ ! -f "$DISTRIB_HOSTS" ]; then
+        touch "$DISTRIB_HOSTS";
+    fi;
 
-grep "^$HOST$" ~/.distrib_hosts &> /dev/null
-rc=$?;
-if [ "$rc" -ne "0" ]; then
-    cp ~/.distrib_hosts /tmp/distrib_hosts.$$
-    echo $HOST >> /tmp/distrib_hosts.$$
-    sort -u /tmp/distrib_hosts.$$ > ~/.distrib_hosts
-    rm /tmp/distrib_hosts.$$
-    host_count=`cat ~/.distrib_hosts | wc -l | tr -d ' '`;
-    echo " => Added to ~/.distrib_hosts (now $host_count hosts)"
+    grep "^$HOST$" "$DISTRIB_HOSTS" &> /dev/null
+    rc=$?;
+    if [ "$rc" -ne "0" ]; then
+        cp "$DISTRIB_HOSTS" /tmp/distrib_hosts.$$
+        echo $HOST >> /tmp/distrib_hosts.$$
+        sort -u /tmp/distrib_hosts.$$ > "$DISTRIB_HOSTS"
+        rm /tmp/distrib_hosts.$$
+        host_count=`cat "$DISTRIB_HOSTS" | wc -l | tr -d ' '`;
+        echo " => Added to ~/.distrib_hosts (now $host_count hosts)"
+    fi;
 fi;
 
 ## Rsync for dotfiles
@@ -85,8 +92,10 @@ $RSYNC $RSYNC_OPTS -a --delete --exclude=.git --exclude=.gitignore ~/.dotfiles -
 echo " => Sync of dotfiles complete, running bootstrap.";
 $SSH $HOST "cd ~/.dotfiles; script/bootstrap -O";
 rc=$?;
+
 if [ "$rc" -ne "0" ]; then
     echo " => dotfile bootstrap failed.";
+    exit 1;
 else
     echo " => dotfiles bootstrapped.";
 fi
@@ -96,4 +105,4 @@ echo " => Sync vim setup."
 $RSYNC $RSYNC_OPTS -a --exclude=.git --exclude=.gitignore --delete -e ssh ~/.vim $HOST:~
 echo " => Vim setup completed."
 echo "DONE.";
-true;
+exit 0;

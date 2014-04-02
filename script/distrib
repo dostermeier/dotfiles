@@ -1,5 +1,4 @@
-#!/bin/bash
-#
+#!/bin/sh
 
 DISTRIB="$ZSH/script/distrib-to";
 DISTRIB_HOSTS="$HOME/.distrib_hosts";
