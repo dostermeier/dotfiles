@@ -2,6 +2,48 @@
 #
 # bootstrap installs things.
 
+usage()
+{
+    cat << EOF
+    usage: $0 options
+
+    This script links the contents of the .dotfiles directory
+    to the $HOME.  When executed on a Mac, this will also 
+    download and install external dependencies.
+
+    OPTIONS:
+       -O      Overwrite all existing content.
+       -B      Backup the existing content that would otherwise be 
+               replaced. 
+       -h      Show this message
+EOF
+}
+
+overwrite_all=false
+backup_all=false
+skip_all=false
+
+while getopts “hOB” OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         B)
+             backup_all=true; 
+             ;;
+         O)
+             overwrite_all=true;
+             ;;
+         *)
+            usage
+            exit
+            ;;
+     esac
+     shift;
+done
+
 DOTFILES_ROOT="`pwd`"
 
 set -e
@@ -32,11 +74,7 @@ link_files () {
 }
 
 install_dotfiles () {
-  info 'installing dotfiles'
-
-  overwrite_all=false
-  backup_all=false
-  skip_all=false
+  info "installing dotfiles\n"
 
   for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
   do
@@ -103,7 +141,7 @@ install_dotfiles
 # If we're on a Mac, let's install and setup homebrew.
 if [ "$(uname -s)" == "Darwin" ]
 then
-  info "installing dependencies"
+  info "installing dependencies\n"
   if source bin/dot > /tmp/dotfiles-dot 2>&1
   then
     success "dependencies installed"

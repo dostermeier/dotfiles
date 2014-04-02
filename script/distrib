@@ -1,22 +1,66 @@
 #!/bin/bash
 
-DISTRIBUTE="$ZSH/script/distribute-to"
+# TODO: support listing of ~/.distrib_hosts
+
+usage()
+{
+    cat << EOF
+    usage: $0 options
+
+    This script triggers script/distrib_to on the hosts specified in
+    ~/.distrib_hosts file.
+
+    OPTIONS:
+       -h      Show this message
+       -l      List the host in the ~/.distrib_hosts file.
+EOF
+}
+
+while getopts “hl” OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         l)
+             LIST_HOSTS=1; 
+             ;;
+         *)
+            usage
+            exit
+            ;;
+     esac
+     shift;
+done
+
+if [ ! -z "$LIST_HOSTS" ]; then
+    if [ ! -f ~/.distrib_hosts ]; then
+        echo "No hosts recorded.";
+    else
+        echo "The following hosts recorded as distrib targets.";
+        cat ~/.distrib_hosts
+    fi
+    exit;
+fi
+
+DISTRIB="$ZSH/script/distrib-to"
 
 # Check for distrib hosts
 if [ ! -f ~/.distrib_hosts ]; then
-    echo "!! no ~/.distrib_hosts found !!";
+    echo "No ~/.distrib_hosts found !!";
     exit 1;
 fi;
 
 ## Setups
-if [ ! -x "$DISTRIBUTE" ]; then
-    echo "!! Could not execute $DISTRIBUTE !!"
+if [ ! -x "$DISTRIB" ]; then
+    echo "Could not execute $DISTRIB !!"
     exit 1;
 fi;
 
 for host in `cat ~/.distrib_hosts`; do
     echo "=> distribute to $host";
-    $DISTRIBUTE $host
+    $DISTRIB $host
 done;
 
 echo "DONE.";
