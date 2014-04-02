@@ -1,6 +1,9 @@
 #!/bin/bash
+#
 
-# TODO: support listing of ~/.distrib_hosts
+DISTRIB="$ZSH/script/distrib-to";
+DISTRIB_HOSTS="$HOME/.distrib_hosts";
+ACTION="distrib";
 
 usage()
 {
@@ -8,60 +11,66 @@ usage()
     usage: $0 options
 
     This script triggers script/distrib_to on the hosts specified in
-    ~/.distrib_hosts file.
+    .distrib_hosts file. By default, this file is located at 
+    $DISTRIB_HOSTS.
 
     OPTIONS:
-       -h      Show this message
-       -l      List the host in the ~/.distrib_hosts file.
+       -h | --help      Show this message
+       -l | --list      List the host in the ~/.distrib_hosts file.
 EOF
 }
 
-while getopts “hl” OPTION
-do
-     case $OPTION in
-         h)
-             usage
-             exit 1
-             ;;
-         l)
-             LIST_HOSTS=1; 
-             ;;
-         *)
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | awk -F= '{print $2}'`
+    case $PARAM in
+        -h | --help)
             usage
             exit
             ;;
-     esac
-     shift;
-done
+        -l | --list)
+            ACTION='list'; 
+            ;;
+        *)
+            echo "ERROR: unknown parameter \"$PARAM\""
+            usage
+            exit 1
+            ;;
+    esac;
+    shift;
+done;
 
-if [ ! -z "$LIST_HOSTS" ]; then
-    if [ ! -f ~/.distrib_hosts ]; then
+if [ $ACTION == "list" ]; then
+    if [ ! -f $DISTRIB_HOSTS ]; then
         echo "No hosts recorded.";
     else
         echo "The following hosts recorded as distrib targets.";
-        cat ~/.distrib_hosts
-    fi
+        cat $DISTRIB_HOSTS
+    fi;
     exit;
-fi
-
-DISTRIB="$ZSH/script/distrib-to"
-
-# Check for distrib hosts
-if [ ! -f ~/.distrib_hosts ]; then
-    echo "No ~/.distrib_hosts found !!";
-    exit 1;
 fi;
 
-## Setups
-if [ ! -x "$DISTRIB" ]; then
-    echo "Could not execute $DISTRIB !!"
-    exit 1;
+if [ $ACTION == "distrib" ]; then
+
+    # Check for distrib hosts
+    if [ ! -f $DISTRIB_HOSTS ]; then
+        echo "No $DISTRIB_HOSTS found !!";
+        exit 1;
+    fi;
+
+    ## Setups
+    if [ ! -x "$DISTRIB" ]; then
+        echo "Could not execute $DISTRIB !!"
+        exit 1;
+    fi;
+
+    for host in `cat $DISTRIB_HOSTS`; do
+        echo "=> distribute to $host";
+        $DISTRIB $host
+    done;
+
+    echo "DONE.";
+    exit 0;
 fi;
 
-for host in `cat ~/.distrib_hosts`; do
-    echo "=> distribute to $host";
-    $DISTRIB $host
-done;
-
-echo "DONE.";
-exit 0;
+exit 1;
