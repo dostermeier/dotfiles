@@ -1,4 +1,4 @@
-#!/bin/env sh
+#!/bin/sh
 #
 # A simple wrapper around git stash.
 #
@@ -11,9 +11,12 @@ usage()
     cat << EOF
     usage: $0 options
 
+    A simple wrapper around git stash. By default, untracked changes
+    are also included in the shelve.
+
     OPTIONS:
        -h | --help          Show this message
-       -p | --pop           
+       -p | --pop           Pop the current shelf.
 EOF
 }
 
