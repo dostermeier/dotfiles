@@ -28,17 +28,17 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | sed 's/^[^=]*=//g'`
     case $PARAM in
-        -h | -? | --help)
+        '-h' | '-?' | '--help')
             usage;
             exit 1;
             ;;
-        -O | --OVERWRITE-all)
+        '-O' | '--overwrite-all')
             OVERWRITE_ALL=true;
             ;;
-        -B | --BACKUP-all)
+        '-B' | '--backup-all')
             BACKUP_ALL=true;
             ;;
-        -S | --SKIP-all)
+        '-S' | '--skip-all')
             SKIP_ALL=true;
             ;;
         *)

@@ -23,11 +23,11 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | sed 's/^[^=]*=//g'`
     case $PARAM in
-        -h | -? | --help)
+        '-h' | '-?' | '--help')
             usage
             exit
             ;;
-        -l | --list)
+        '-l' | '--list')
             ACTION='list'; 
             ;;
         *)
