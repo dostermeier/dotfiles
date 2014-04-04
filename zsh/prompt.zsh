@@ -14,10 +14,6 @@ PROMPT_COLOR_HOST="";
 PROMPT_COLOR_PATH="";
 PROMPT_COLOR_USERNAME_HOST="${txtblu}";
 
-#
-# GIT prompt support (move this into the git module and selectively use it? at least the functions?)
-#
-
 _prompt_git_status() {
     if [[ $(_is_git_dirty) == "true" ]]
     then

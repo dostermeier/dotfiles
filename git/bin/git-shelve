@@ -1,0 +1,46 @@
+#!/bin/env sh
+#
+# A simple wrapper around git stash.
+#
+
+ACTION_PUSH="true";
+ACTION_POP="false";
+
+usage()
+{
+    cat << EOF
+    usage: $0 options
+
+    OPTIONS:
+       -h | --help          Show this message
+       -p | --pop           
+EOF
+}
+
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | sed 's/^[^=]*=//g'`
+    case $PARAM in
+        '-h' | '-?' | '--help')
+            usage
+            exit
+            ;;
+        '-p' | '--pop')
+            ACTION_POP=true;
+            ACTION_PUSH=false;
+            ;;
+        *)
+            echo "ERROR: unknown parameter \"$PARAM\""
+            usage
+            exit 1
+            ;;
+    esac;
+    shift;
+done;:
+
+if [[ $ACTION_PUSH == "true" ]]; then
+    git stash save --include-untracked
+fi;
+if [[ $ACTION_POP == "true" ]]; then
+    git stash pop
+fi;
