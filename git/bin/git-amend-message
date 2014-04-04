@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Amend the previous commit comment.
+#
+# $1 - The new comment.
+#
+# Examples
+#
+#   git-amend-message "my new comment message is as useful as the last"
+
+git commit --amend -m "$1"

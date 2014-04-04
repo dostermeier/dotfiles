@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Show the response headers for a web request.
+#
+# Examples:
+#
+#  You can either ask for a single URLs headers.
+#
+#    request-header booking.com
+#
+#  Or for multiple URLs headers.
+#
+#    request-header booking.com google.com
+#
+
+curl -sv "$@" 2>&1 >/dev/null |
+  grep -v "^\*" |
+    grep -v "^}" |
+      cut -c3-
