@@ -1,5 +1,0 @@
-#!/bin/sh
-#
-# Clean all of the untracked in the changes in this working directory.
-
-git clean -f -d             # Removes untracked files.
