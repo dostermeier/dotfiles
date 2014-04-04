@@ -13,6 +13,22 @@
 #    request-header booking.com google.com
 #
 
+usage () {
+    cat << EOF
+    usage: $0 <url> [<url>]
+        
+    This script issues an HTTP GET request, returning the response
+    headers.
+EOF
+}
+
+# Validate arguments.
+if [[ "$@" == "" ]]; then
+    echo "Missing URL.";
+    usage;
+    exit 1;
+fi
+
 curl -sv "$@" 2>&1 >/dev/null |
   grep -v "^\*" |
     grep -v "^}" |
