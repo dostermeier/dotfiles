@@ -59,8 +59,8 @@ _prompt_git() {
 
 #export PROMPT=$'%{\e[0;36m%} - %~ - %{\e[0m%}/ '
 _prompt_refresh() {
-    PROMPT="$(_prompt_username)@$(_prompt_hostname):$(_prompt_git)(%~)
-> "
+    PROMPT="$(_prompt_username)@$(_prompt_hostname)(%~)
+$(_prompt_git)> "
 }
 
 precmd() {
