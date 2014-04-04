@@ -3,5 +3,57 @@
 # Clean all of the untracked and uncommitted changes in the 
 # working directory.
 
-git reset --hard            # Removes stages and working directory changes.
-git clean -f -d             # Removes untracked files.
+usage()
+{
+    cat << EOF
+    usage: $0 options
+
+    Delete all of the untracked and tracked changes in the working
+    directory.
+
+    OPTIONS:
+       -h | --help          Show this message
+       -A | --all           Clean tracked and untracked changes.
+       -t | --tracked       Clean tracked changes.
+       -u | --untracked     Clean untracked changes.
+EOF
+}
+
+ACTION_CLEAN_TRACKED=false;
+ACTION_CLEAN_UNTRACKED=true;
+
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | sed 's/^[^=]*=//g'`
+    case $PARAM in
+        '-h' | '-?' | '--help')
+            usage
+            exit
+            ;;
+        '-A' | '--all')
+            ACTION_CLEAN_TRACKED=true;
+            ACTION_CLEAN_UNTRACKED=true;
+            ;;
+        '-t' | '--tracked')
+            ACTION_CLEAN_TRACKED=true;
+            ACTION_CLEAN_UNTRACKED=false;
+            ;;
+        '-u' | '--untracked')
+            ACTION_CLEAN_TRACKED=false;
+            ACTION_CLEAN_UNTRACKED=true;
+            ;;
+        *)
+            echo "ERROR: unknown parameter \"$PARAM\""
+            usage
+            exit 1
+            ;;
+    esac;
+    shift;
+done;:
+
+if [ "$ACTION_CLEAN_TRACKED" == "true" ]; then
+    git reset --hard            # Removes stages and working directory changes.
+fi;
+if [ "$ACTION_CLEAN_UNTRACKED" == "true" ]; then
+    git clean -f -d             # Removes untracked files.
+fi
