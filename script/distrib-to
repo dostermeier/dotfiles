@@ -52,6 +52,7 @@ if [ -z $HOST ]; then
     exit
 fi
 
+SCP="/usr/bin/scp"
 SSH="/usr/bin/ssh -x"
 RSYNC="/usr/bin/rsync"
 
@@ -98,6 +99,12 @@ if [ "$rc" -ne "0" ]; then
     exit 1;
 else
     echo " => dotfiles bootstrapped.";
+fi
+
+ZSHRC_LOCAL="$HOME/.zshrc.local";
+if [ -f $ZSHRC_LOCAL ]; then
+    echo " => Sync ~/.zshrc.local"
+    $SCP -q ~/.zshrc.local $HOST:~
 fi
 
 ## Vim Configs
