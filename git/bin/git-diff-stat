@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Generate stats diff report between the current branch and
+# the specified branch.
+#
+# Example:
+# 
+#    git-diff-stat master
+#
+
+git diff --stat $1
