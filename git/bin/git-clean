@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Clean all of the untracked and uncommitted changes in the 
+# working directory.
+
+git reset --hard            # Removes stages and working directory changes.
+git clean -f -d             # Removes untracked files.
