@@ -45,8 +45,8 @@ _prompt_git() {
 }
 
 _set_prompt () {
-    PROMPT="$(_prompt_username_host)> %~ >
-$(_prompt_git)> ";
+    PROMPT="$(_prompt_username_host) $(_prompt_git) %~ 
+> ";
     RPROMPT="";
 }
 
