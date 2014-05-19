@@ -71,4 +71,4 @@ set background=dark
 syntax on
 
 " File type mapping
-au BufRead,BufNewFile *.t     setfiletype pm
+au BufRead,BufNewFile *.t     set filetype=perl
