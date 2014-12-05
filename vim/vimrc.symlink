@@ -18,11 +18,16 @@ set laststatus=2
 " Tab handling
 " ----------------------------
 set autoindent
-set tabstop=4
+set tabstop=8
 set shiftwidth=4
+set softtabstop=4
 set expandtab
 set shiftround
 set smarttab
+
+" To show special characters in Vim
+set list
+set listchars=tab:▸\ ,trail:·
 
 " Maps and Functions
 " -----------------------------
@@ -69,6 +74,7 @@ colorscheme molokai
 set background=dark
 
 syntax on
+syntax enable
 
 " File type mapping
 au BufRead,BufNewFile *.t     set filetype=perl
